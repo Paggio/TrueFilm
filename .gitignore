@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Personalized
+.vscode/
+dataOrigin/
+output.txt
+inspection_notebook.ipynb
+test_helper_notebook.ipynb
+tmp/
