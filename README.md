@@ -2,10 +2,10 @@
 
 ### Future developments & comments
 
-In first place I have to say that I don't think we can download automatically the imdb's database (since i needed to login in order to download it), which is the really interesting thing: the wiki pages won't change very often (actually i could have spent more time investigating this circumenstance, but those have been very busy days). 
+- In first place I have to say that I don't think we can download automatically the imdb's database (since i needed to login in order to download it), which is the really interesting thing: the wiki pages won't change very often (actually i could have spent more time investigating this circumenstance, but those have been very busy days). 
 Thus, we shall always start with the manual action of placing the zipped file into a target directory.
 
-Second and most important thing: <b>i want to structure all the project as a very basic micorservice written through Flask and Deockerized</b>. I have still to write the appropriate code, but what i foundamentally want to end up with is:
+- Second and most important thing: <b>i want to structure all the project as a very basic micorservice written through Flask and Deockerized</b>. I have still to write the appropriate code, but what i foundamentally want to end up with is:
 
     1. An endpoint which starts the process of loading data into the postgreSQL, ind immediately return OK (and an operation identifier) or KO, if the operation started. 
     The operation will start only if in the meantime another upload is in progress. 
@@ -13,7 +13,7 @@ Second and most important thing: <b>i want to structure all the project as a ver
     2. An endpoint which will allows for the control of the status (through the ID) of an operation previuosly started.
     3. An endpoint which will return the last time that the table has been updated, getting this information through the technical table.
 
-The last thing is a correction that i want to try in the mechanism of the data manipulation: <b>very likely, for many films, the correct name of the wikipedia page is probabably 'Film Name (year XXX)'</b>. We could get many more links to the films wikipedia's page by considering this fact (the year of production can be easily found in IMDB database).
+- The last thing is a correction that i want to try in the mechanism of the data manipulation: <b>very likely, for many films, the correct name of the wikipedia page is probabably 'Film Name (year XXX)'</b>. We could get many more links to the films wikipedia's page by considering this fact (the year of production can be easily found in IMDB database).
 
 ### Overview of the project
 
@@ -71,6 +71,9 @@ Some point:
     2. Films that have non-univoque titles will associates the wrong Wikipedia page, unfortunately.
     3. There are films which does not redirect to the correct Wikipedia page - i have to conclude that for those films there is not wikipedia page, or the name of the page is not the exact name of the film on the imdb page. Still, more accurate controls would be needed on this point. 
 
+&nbsp;
+&nbsp;
+&nbsp;
 
 
 ![TransromerImage](https://i.ytimg.com/vi/3LBNM1eYVnY/maxresdefault.jpg)
