@@ -69,7 +69,8 @@ Some point:
 
     1. Films with the same title will link to the same page.
     2. Films that have non-univoque titles will associates the wrong Wikipedia page, unfortunately.
-    3. There are films which does not redirect to the correct Wikipedia page - i have to conclude that for those films there is not wikipedia page, or the name of the page is not the exact name of the film on the imdb page. Still, more accurate controls would be needed on this point. 
+    3. There are films which does not redirect to the correct Wikipedia page - i have to conclude that for those films there is not wikipedia page, or the name of the page is not the exact name of the film on the imdb page. Still, more accurate controls would be needed on this point.
+    4. The films which get a rating_over_budget equal to -1 are the films which results to have a budget of 0 or 1 - which, of course, would have invalidated the overall analysis. The cutoff is arbitrary, we could've set it a little bit higher.
 
 &nbsp;
 &nbsp;
