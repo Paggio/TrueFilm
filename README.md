@@ -2,11 +2,14 @@
 
 ### Future developments & comments
 
-In first place I have to say I don't think we can download automatically the imdb's database, which is the really interesting thing: the wiki pages won't change very often (actually i could have spent more time investigating this circumenstance, but those have been very busy days...). Thus, we shall always start with the manual action of placing the zipped file into a target directory.
+In first place I have to say that I don't think we can download automatically the imdb's database (since i needed to login in order to download it), which is the really interesting thing: the wiki pages won't change very often (actually i could have spent more time investigating this circumenstance, but those have been very busy days). 
+Thus, we shall always start with the manual action of placing the zipped file into a target directory.
 
 Second and most important thing: <b>i want to structure all the project as a very basic micorservice written through Flask and Deockerized</b>. I have still to write the appropriate code, but what i foundamentally want to end up with is:
 
-    1. An endpoint which starts the process of loading data into the postgreSQL, ind immediately return OK (and an operation identifier) or KO, if the operation started. The operation will start only if in the meantime another upload is in progress. As backend, we will use the same PostgreSQL (for semplicity, but we could without any problem use any other DB), where we will have a technical table where each time the starting time of an upload will be noted, as its final status (handling the exception of the operations with a standard try/except) .
+    1. An endpoint which starts the process of loading data into the postgreSQL, ind immediately return OK (and an operation identifier) or KO, if the operation started. 
+    The operation will start only if in the meantime another upload is in progress. 
+    As backend, we will use the same PostgreSQL (for semplicity, but we could without any problem use any other DB), where we will have a technical table where each time the starting time of an upload will be noted, as its final status (handling the exception of the operations with a standard try/except).
     2. An endpoint which will allows for the control of the status (through the ID) of an operation previuosly started.
     3. An endpoint which will return the last time that the table has been updated, getting this information through the technical table.
 
@@ -16,14 +19,13 @@ The last thing is a correction that i want to try in the mechanism of the data m
 
 This code rapresents a mechanism which allows, programmatically, to extract the target data from the starting databaeses, and insert them in a postgreSQL.
 
-It can be considered as finiissed, in its core components. Still, there is one last feature, on which i will work on an apposite branch, for which i hope to find the time - i will talk about it in an apposite section.
+It can be considered as finished, in its core components. Still, it lacks the microservice structure, on which i will work on an apposite branch - I hope to find the time.
 
-It is a python code, which relys on Docker for what concerns the postgreSQL, and on two main libraries besides the python3 standard ones: pandas (for the DataFrames' manipulation) and psycopg2 (as a client library to the postgreSQL). In a second moment, as i will explain, also Flask could be involved.
+It is a python 3 code, which relys on Docker for what concerns the postgreSQL, and on two main libraries besides the python 3 standard ones: pandas (for the DataFrames' manipulation) and psycopg2 (as a client library to the postgreSQL). In a second moment, as i will explain, also Flask could be involved.
 
-The code is not implemented as a Python's library: since it serves to a really accurate task, i didn't see the necessity to make it to scale its reprodocibility. In case, anyway, it could be quite immediate, since i have already sliced the code in main logical functions inside the main.py, and i have placed the utils function in a dedicate directory.  
+The code is not implemented as a Python's library: since it serves to a really accurate task, i didn't see the necessity to pack itas a library to scale its reprodocibility. In case, anyway, it could be quite immediate, since i have already sliced the code in main logical functions inside the main.py, and i have placed the utils function in a dedicate directory.  
 
 The code can also run in debug mode.
-
 
 ### Instructions to run the code & query the results
 
