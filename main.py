@@ -130,6 +130,7 @@ def generate_dataframe() -> pd.DataFrame:
 
 
 def main():
+    # Here I ahve to parametrically accept Postgres configurations...
 
     # In first place we unzip the files
     unzipping()
@@ -138,10 +139,11 @@ def main():
     df = generate_dataframe()
 
     # Then we upload it on the postgreSQL
+    db_spec = dict(config.items("DB_SPEC"))
     client_psql = client_postgreSQL.ClientPostgreSQL(
-        username="postgres", password="abcd1234", database="mattia"
+        username=db_spec['postgres_username'], password=db_spec['postgres_password'], database=db_spec['database_name']
     )
-    client_psql.upload_df(df, database="movie_database", table="ratings_ratio")
+    client_psql.upload_df(df, database=db_spec['database_name'], table=db_spec['table_name'])
 
 
 class CommandLine:
