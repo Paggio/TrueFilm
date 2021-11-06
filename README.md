@@ -1,5 +1,9 @@
 # TrueFilm
 
+<b>TO BE UPDATED</b>
+
+We will have two mode of executions, and the Microservice one must be explained from scratch
+
 ### Future developments & comments
 
 - In first place I have to say that I don't think we can download automatically the imdb's database (since i needed to login in order to download it), which is the really interesting thing: the wiki pages won't change very often (actually i could have spent more time investigating this circumenstance, but those have been very busy days). 

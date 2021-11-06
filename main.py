@@ -129,7 +129,16 @@ def generate_dataframe() -> pd.DataFrame:
     return df_tot
 
 
-def main():
+def main(force_debug=False, postgres_host="localhost"):
+    
+    if force_debug:
+        logging.basicConfig(
+            filename="log_output.txt",
+            filemode="a",
+            format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+            datefmt="%H:%M:%S",
+            level=logging.DEBUG,
+        )
 
     # In first place we unzip the files
     unzipping()
@@ -138,10 +147,16 @@ def main():
     df = generate_dataframe()
 
     # Then we upload it on the postgreSQL
+    db_spec = dict(config.items("DB_SPEC"))
     client_psql = client_postgreSQL.ClientPostgreSQL(
-        username="postgres", password="abcd1234", database="mattia"
+        hostname=postgres_host,
+        username=db_spec["postgres_username"],
+        password=db_spec["postgres_password"],
+        database=db_spec["database_name"],
     )
-    client_psql.upload_df(df, database="movie_database", table="ratings_ratio")
+    client_psql.upload_df(
+        df, database=db_spec["database_name"], table=db_spec["table_name"]
+    )
 
 
 class CommandLine:
@@ -165,6 +180,12 @@ if __name__ == "__main__":
     input_settings = CommandLine()
     if input_settings.debug:
         print("Debug active!")
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(
+            filename="log_output.txt",
+            filemode="a",
+            format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+            datefmt="%H:%M:%S",
+            level=logging.DEBUG,
+        )
 
     main()

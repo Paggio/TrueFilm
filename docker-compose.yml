@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+
+  python_app:
+    build: .
+    container_name: 
+      python_app
+    hostname: 
+      python_app
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: development
+
+  postgres_db:
+    image: "postgres:alpine"
+    container_name: 
+      postgres_db
+    hostname: 
+      postgres_db
+    environment: 
+      - POSTGRES_PASSWORD=abcd1234
+    ports: 
+      - "5432:5432"
