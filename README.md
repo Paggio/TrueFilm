@@ -1,5 +1,7 @@
 # TrueFilm
 
+<b>TO BE UPDATED</b>
+
 ### Instructions to run the code
 
 In first place, we have to set up the postreSQL through Docker, on our local host.

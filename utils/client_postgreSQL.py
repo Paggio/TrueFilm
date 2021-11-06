@@ -37,7 +37,10 @@ class ClientPostgreSQL:
     def set_database(self, database):
         self.__database = database
         self.connection = psycopg2.connect(
-            host=self.__hostname, user=self.__username, password=self.__password, database=self.__database
+            host=self.__hostname,
+            user=self.__username,
+            password=self.__password,
+            database=self.__database,
         )
 
     def get_database(self):
@@ -84,7 +87,7 @@ class ClientPostgreSQL:
         Check if table exists - working only for tables in tables schema = 'public'
         We have to first connect to the interested db!
         """
-        if not self.__check_exists_database(database = database):
+        if not self.__check_exists_database(database=database):
             # If database does not exist, so does not the table
             return False
         if self.__database != database:
@@ -131,20 +134,20 @@ class ClientPostgreSQL:
         )
         df.to_sql(name=table, con=engine, if_exists=mode, index=False)
 
-    def read_table(
-        self,
-        database: "str",
-        table: "str"
-    ) -> pd.DataFrame:
+    def read_table(self, database: "str", table: "str") -> pd.DataFrame:
         """
         Read table from postgreSQL, and return it as pandas DataFrame
         """
 
         if not self.__check_exists_database(database):
-            logging.error(f"{database} DB does not exists, but we are trying to read from it!")
+            logging.error(
+                f"{database} DB does not exists, but we are trying to read from it!"
+            )
             raise Exception
-        if not self.__check_exists_table(database = database, table = table):
-            logging.error(f"{table} from {database} does not exists, but we are trying to read from it!")
+        if not self.__check_exists_table(database=database, table=table):
+            logging.error(
+                f"{table} from {database} does not exists, but we are trying to read from it!"
+            )
             raise Exception
 
         if self.__database != database:
@@ -154,13 +157,12 @@ class ClientPostgreSQL:
             f"postgresql://{self.__username}:{self.__password}@{self.__hostname}:{self.__port}/{self.__database}"
         )
 
-        df = pd.read_sql_query(f'select * from "{table}"',con=engine)
+        df = pd.read_sql_query(f'select * from "{table}"', con=engine)
 
         return df
 
-    def check_table_exists(self, table : str, database : str) -> bool:
+    def check_table_exists(self, table: str, database: str) -> bool:
         """
         I implement an interface for checking if a table exists, since it can be usefull to have it as public method
         """
-        return self.__check_exists_table(table = table, database = database)
-
+        return self.__check_exists_table(table=table, database=database)

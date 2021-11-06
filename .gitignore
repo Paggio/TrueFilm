@@ -137,3 +137,4 @@ test_helper_notebook.ipynb
 tmp/
 personal_notes.txt
 test_output/
+Dockerfile_personal_notes
