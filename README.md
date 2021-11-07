@@ -1,9 +1,5 @@
 # TrueFilm
 
-<b>TO BE UPDATED</b>
-
-We will have two mode of executions, and the Microservice one must be explained from scratch
-
 ### Comments about the project
 
 - This project can be run in two ways - both of which need the support of Docker. The first one is as a python script, that basically consists running the main.py file. The second one is to build a microservice and use http requests in order to trigger and monitor the data upload into the postgreSQL. Both ways are explained in this README.
@@ -40,23 +36,26 @@ At this point, we will have avaiable, at the port 5000 of our local machine wher
 - http://127.0.0.1/load_postgreSQL - GET
 This endpoint will return {"status": "OK", "process_id": process_number} if the uploading process has started without any problem. In case of execution/connection problem, it will return an error report. If an uploading operation is already in progress, it will return return {"status": "Ingestion already in progress", "process_number": process_number}.
 Thus in order to start the ingestion, we will need to run (for exmple with python code):
-
-    - r = requests.get('http://127.0.0.1:5000/load_postgreSQL')
-    - assert r.json()['status'] == 'OK'
-    - print('Process number : ' + r.json()['process_number'])
+```sh
+r = requests.get('http://127.0.0.1:5000/load_postgreSQL')
+assert r.json()['status'] == 'OK'
+print('Process number : ' + r.json()['process_number'])
+```
 
 - http://127.0.0.1/process_status
 Once we have triggered the execution (or we've been told that an uploading is already in progress), we can use the process number associated to monitor its progress. We have to interrogate this endpoint, adding the process_number as parameter. When the process will finish, will obtain a response such as {"status": "OK", "process_number": process_number, "last_state": "COMPLETED", "timestamp": max_timestamp}. In case of error, we will receive specific error messages. A sample python code in order to await for the upload end would be:
 
-    - process_number = 123456
-      process_end = False
-      while not process_end:
-        r = requests.get('http://127.0.0.1:5000/process_status', params = {'process_number' : process_number})
-        assert r.status_code == 200, 'Something went wrong in http communication..."
-        assert r.json()['last_state'] in ['STARTED', 'COMPLETED'], 'Something went wrong in the uploading process..."
-        if r.json()['last_state'] == 'COMPLETED':
-            print(r.json())
-            process_end = True
+```sh
+process_number = 123456
+process_end = False
+while not process_end:
+    r = requests.get('http://127.0.0.1:5000/process_status', params = {'process_number' : process_number})
+    assert r.status_code == 200, 'Something went wrong in http communication...'
+    assert r.json()['last_state'] in ['STARTED', 'COMPLETED'], 'Something went wrong in the uploading process...'
+    if r.json()['last_state'] == 'COMPLETED':
+        print(r.json())
+        process_end = True
+```
 
 Once a process has ended succesfully, we can look into our postgreSQL by running, through PowerShell, and always with Docker Desktop running. We are gonna enter the bash of the file system which contains the postgreSQL, and then logging as standard user, entering the database 'movie_database' (the standard name that we gave to the db) and running a SQL query on the table that we have just created (the name of the table is in this case hard coded):
 
