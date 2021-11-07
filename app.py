@@ -53,7 +53,7 @@ def load_postgreSQL():
             df_logging = pd.DataFrame(
                 {
                     "process_number": [process_number],
-                    "state": ["FINISHED"],
+                    "state": ["COMPLETED"],
                     "time": [datetime.datetime.now()],
                 }
             )

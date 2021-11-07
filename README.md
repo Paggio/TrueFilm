@@ -4,20 +4,16 @@
 
 We will have two mode of executions, and the Microservice one must be explained from scratch
 
-### Future developments & comments
+### Comments about the project
 
-- In first place I have to say that I don't think we can download automatically the imdb's database (since i needed to login in order to download it), which is the really interesting thing: the wiki pages won't change very often (actually i could have spent more time investigating this circumenstance, but those have been very busy days). 
-Thus, we shall always start with the manual action of placing the zipped file into a target directory.
+- This project can be run in two ways - both of which need the support of Docker. The first one is as a python script, that basically consists running the main.py file. The second one is to build a microservice and use http requests in order to trigger and monitor the data upload into the postgreSQL. Both ways are explained in this README.
 
-- Second and most important thing: <b>i want to structure all the project as a very basic micorservice written through Flask and Deockerized</b>. I have still to write the appropriate code, but what i foundamentally want to end up with is:
+- I don't think we that we can download automatically the imdb's database (since i needed to login in order to download it), which is the really interesting thing: the wiki pages won't change very often (actually i could have spent more time investigating this circumenstance, but those have been very busy days). 
+Thus, we shall always start with the manual action of placing the zipped file into a target directory, for both the execution modes.
 
-    1. An endpoint which starts the process of loading data into the postgreSQL, ind immediately return OK (and an operation identifier) or KO, if the operation started. 
-    The operation will start only if in the meantime another upload is in progress. 
-    As backend, we will use the same PostgreSQL (for semplicity, but we could without any problem use any other DB), where we will have a technical table where each time the starting time of an upload will be noted, as its final status (handling the exception of the operations with a standard try/except).
-    2. An endpoint which will allows for the control of the status (through the ID) of an operation previuosly started.
-    3. An endpoint which will return the last time that the table has been updated, getting this information through the technical table.
+- The last thing is a correction that one could try in the mechanism of the data manipulation: <b>very likely, for many films, the correct name of the wikipedia page is probabably 'Film Name (year XXX)'</b>. We could get many more links to the films wikipedia's page by considering this fact (the year of production can be easily found in IMDB database).
 
-- The last thing is a correction that i want to try in the mechanism of the data manipulation: <b>very likely, for many films, the correct name of the wikipedia page is probabably 'Film Name (year XXX)'</b>. We could get many more links to the films wikipedia's page by considering this fact (the year of production can be easily found in IMDB database).
+<em>Be also sure to read the last comments, at the end of this README.md</em>
 
 ### Overview of the project
 
@@ -31,7 +27,47 @@ The code is not implemented as a Python's library: since it serves to a really a
 
 The code can also run in debug mode.
 
-### Instructions to run the code & query the results
+### Instructions to run the code as Microservice & query the results
+
+We need to create a directory in the root path, TrueFilm\dataOrigin\, in which we have to put the two compressed files which are the starting point of the project. So, we'll need to download the files from https://docs.google.com/document/d/1X17nvlKN4BvSgdGT6Yhjvu30fnk4xJQ1TKH3HlBAILA/edit?usp=sharing and https://www.kaggle.com/rounakbanik/the-movies-dataset/version/7#movies_metadata.csv (we will call this file, for example, archive.zip, and contains seven .csv files, as ratings.csv, keywords.csv, links.csv...), and place the files as dataOrigin\enwiki-latest-abstract.xml.gz and dataOrigin\archive.zip. Moreover, a folder named dataOrigin/extractions/ must be created. Those paths can are customizable, as long as we also modify the file config.cfg. 
+
+Then, we shall run a docker-compose command (in the root directory of this project):
+
+* docker-compose up -d
+
+At this point, we will have avaiable, at the port 5000 of our local machine where Docker is raining, an app, for which we have mainly two endpoints - one for triggering the process, the other one for monitoring the execution.
+
+- http://127.0.0.1/load_postgreSQL - GET
+This endpoint will return {"status": "OK", "process_id": process_number} if the uploading process has started without any problem. In case of execution/connection problem, it will return an error report. If an uploading operation is already in progress, it will return return {"status": "Ingestion already in progress", "process_number": process_number}.
+Thus in order to start the ingestion, we will need to run (for exmple with python code):
+
+    - r = requests.get('http://127.0.0.1:5000/load_postgreSQL')
+    - assert r.json()['status'] == 'OK'
+    - print('Process number : ' + r.json()['process_number'])
+
+- http://127.0.0.1/process_status
+Once we have triggered the execution (or we've been told that an uploading is already in progress), we can use the process number associated to monitor its progress. We have to interrogate this endpoint, adding the process_number as parameter. When the process will finish, will obtain a response such as {"status": "OK", "process_number": process_number, "last_state": "COMPLETED", "timestamp": max_timestamp}. In case of error, we will receive specific error messages. A sample python code in order to await for the upload end would be:
+
+    - process_number = 123456
+      process_end = False
+      while not process_end:
+        r = requests.get('http://127.0.0.1:5000/process_status', params = {'process_number' : process_number})
+        assert r.status_code == 200, 'Something went wrong in http communication..."
+        assert r.json()['last_state'] in ['STARTED', 'COMPLETED'], 'Something went wrong in the uploading process..."
+        if r.json()['last_state'] == 'COMPLETED':
+            print(r.json())
+            process_end = True
+
+Once a process has ended succesfully, we can look into our postgreSQL by running, through PowerShell, and always with Docker Desktop running. We are gonna enter the bash of the file system which contains the postgreSQL, and then logging as standard user, entering the database 'movie_database' (the standard name that we gave to the db) and running a SQL query on the table that we have just created (the name of the table is in this case hard coded):
+
+* docker exec -it postgres_db bash
+* psql -U postgres
+* \c movie_database
+* SELECT * FROM ratings_ratio;
+
+There could have been different ways to interrogate this db, maybe in a more programmatic way. The python's library psycopg2, which is also present in this project, is a way.
+
+### Instructions to run the code as python script & query the results
 
 In first place, we have to set up the postreSQL through Docker, on our local host.
 
@@ -43,7 +79,7 @@ In order to do thath, we shall download and install Docker Desktop, then, throug
 With the first command, we download to local the image that we need, with the second command we use that image in order to run a container. With the second command, we create and run the container, setting the password of the postgres along with the exposed port.
 Now, we have a postreSQL running on our local machine.
 
-Then, we need to create a directory in the root path, TrueFilm\dataOrigin\, in which we have to put the two compressed files which are the starting point of the project. So, we'll need to download the files from https://docs.google.com/document/d/1X17nvlKN4BvSgdGT6Yhjvu30fnk4xJQ1TKH3HlBAILA/edit?usp=sharing and https://www.kaggle.com/rounakbanik/the-movies-dataset/version/7#movies_metadata.csv (we will call this file, for example, archive.zip), and place the files as dataOrigin\enwiki-latest-abstract.xml.gz and dataOrigin\archive.zip. Moreover, a folder named dataOrigin/extractions must be created. Those paths can are customizable, as long as we also modify the file config.cfg. 
+Then, we need to create a directory in the root path, TrueFilm\dataOrigin\, in which we have to put the two compressed files which are the starting point of the project. So, we'll need to download the files from https://docs.google.com/document/d/1X17nvlKN4BvSgdGT6Yhjvu30fnk4xJQ1TKH3HlBAILA/edit?usp=sharing and https://www.kaggle.com/rounakbanik/the-movies-dataset/version/7#movies_metadata.csv (we will call this file, for example, archive.zip and contains seven .csv files, as ratings.csv, keywords.csv, links.csv...), and place the files as dataOrigin\enwiki-latest-abstract.xml.gz and dataOrigin\archive.zip. Moreover, a folder named dataOrigin/extractions/ must be created. Those paths can are customizable, as long as we also modify the file config.cfg. 
 
 The we can run the main.py module (after the installation of the requirements.txt):
 
@@ -63,7 +99,9 @@ There could have been different ways to interrogate this db, maybe in a more pro
 
 Some point:
 
-- We have a ./tests directory. In our case, those tests will only test for the correctness of the unzipping module which will start the project, and a mild check about the correctness of the DataFrame (in particular, we check that at least the 50% of the films associate a Wikipedia page link). The tests itself could be more significant (it is basically something which is ruled by the data consumers), but the very concept of having a tests section is important, as a preliminary check to the production deploy. This test can be run as (it is important to run this command in the root directory path, as all the relative path are intended to start from here):
+- About the 'Microservice' structure (which of course could be implemented in a much more production-mature way, and documented trough OpenAPI): i have stored the tecnical table (which actually keep trace of the state of the upload) in the same postgreSQL in which i upload the data. We could decouple it, and use any other database as the backend of the microservice. This would be a definitely better way, because it would allow us to parametrically pass (thorugh http communication) the postgreSQL address where we want to upload data. 
+
+- We have a ./tests directory. In our case, those tests will only test for the correctness of the unzipping module which will start the project, and a mild check about the correctness of the DataFrame (in particular, we check that at least the 50% of the films associate a Wikipedia page link). The tests itself could be more significant (it is basically something which is ruled by the data consumers), but the very concept of having a tests section is important, as a preliminary check to the production deploy. <em>More tests should be added, anyway</em>. This test can be run as (it is important to run this command in the root directory path, as all the relative path are intended to start from here):
 
     - pip3 install -r requirements.txt
     - python3 -m pytest ./tests -s 

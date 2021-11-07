@@ -1,0 +1,14 @@
+17:56:40,55 root DEBUG IMDB file already unzipped
+17:56:40,56 root DEBUG Wiki file already unzipped
+17:56:53,347 root DEBUG df_ratings counts : {'movieId': 45115, 'average_rating': 45115}
+17:56:53,461 root DEBUG df_metadata_after_bridge_link counts : {'budget': 45463, 'original_title': 45901, 'movieId': 45901}
+17:56:53,491 root DEBUG overall_imdb_df counts : {'movieId': 44741, 'average_rating': 44741, 'budget': 44741, 'original_title': 44741}
+17:56:53,900 root DEBUG Extracting wikipedia informations
+17:58:09,424 root DEBUG wiki_df counts : {'original_title': 6386761, 'wiki_urls': 6386761}
+17:58:21,121 root DEBUG final_df counts : {'rating_over_budget': 44741, 'movieId': 44741, 'average_rating': 44741, 'budget': 44741, 'original_title': 44741, 'wiki_urls': 25168}
+17:58:21,536 root DEBUG Connecting to database...
+17:58:21,568 root DEBUG postgreSQL connected!
+17:58:21,569 root DEBUG Checking if database movie_db exists...
+17:58:21,575 root DEBUG movie_db does not exists, creating!
+17:58:21,576 root DEBUG Creating database movie_db...
+17:58:21,802 root DEBUG Loading the dataframe on the postgreSQL...
