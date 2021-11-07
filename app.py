@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+from flasgger import Swagger
+from flasgger.utils import swag_from
 import traceback
 import logging
 from threading import Thread
@@ -8,6 +10,7 @@ import datetime
 from utils.client_postgreSQL import ClientPostgreSQL
 
 app = Flask(__name__)
+swagger = Swagger(app)
 
 global config
 global db_spec
@@ -18,8 +21,6 @@ config.read("./config.cfg")
 
 db_spec = dict(config.items("DB_SPEC"))
 network_spec = dict(config.items("NETWORK"))
-
-# We run this code with
 
 
 @app.route("/params_test")
@@ -38,8 +39,8 @@ def entry():
 
 
 @app.route("/load_postgreSQL", methods=["GET"])
+@swag_from('swaggers/load_postgreSQL.yml')
 def load_postgreSQL():
-    # Here i could parametrically accept postgreSQL coordinates
 
     db_spec = dict(config.items("DB_SPEC"))
     network_spec = dict(config.items("NETWORK"))
@@ -69,7 +70,7 @@ def load_postgreSQL():
                     "process_number": [process_number],
                     "state": ["ERROR"],
                     "time": [datetime.datetime.now()],
-                    "error": str(e),
+                    "error": str(e)
                 }
             )
             client.upload_df(

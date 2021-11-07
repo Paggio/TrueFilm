@@ -1,5 +1,12 @@
 # TrueFilm
 
+The pourpose of this branch (feature_minors) is to:
+  - Have a better work with the Wikipedia links.
+  - Maybe add some OpenAPI documentation
+  - Parametrized PostgreSQL host
+  - Microservice logging inside the container
+  - Better tests
+
 ### Comments about the project
 
 - This project can be run in two ways - both of which need the support of Docker. The first one is as a python script, that basically consists running the main.py file. The second one is to build a microservice and use http requests in order to trigger and monitor the data upload into the postgreSQL. Both ways are explained in this README.
